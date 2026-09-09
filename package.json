@@ -1,5 +1,5 @@
 {
-  "name": "insulin-tracker",
+  "name": "gluco-track",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -31,7 +31,7 @@
     "typescript": "~6.0.2",
     "vite": "^8.2.2"
   },
-  "description": "Web app for tracking daily blood glucose readings",
+  "description": "Web app for recording and tracking blood glucose, blood pressure, weight and lab exams",
   "engines": {
     "node": ">=22.12.0"
   }

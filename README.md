@@ -1,10 +1,11 @@
-# Insulin Tracker
+# GlucoTrack
 
 Web application for recording and tracking daily blood glucose readings, blood pressure, weight and
 lab exam attachments.
 
 Requirements, scope, technical decisions and the contribution workflow live in
-[`REQUIREMENTS.md`](./REQUIREMENTS.md). Read it before opening a pull request.
+`docs/REQUIREMENTS.md`. That directory is deliberately outside version control, so ask the maintainer
+for a copy. Read it before opening a pull request.
 
 ## Stack
 
@@ -50,8 +51,8 @@ The dev server prints the local URL, by default <http://localhost:5173>.
 | `npm run format` | Format with Prettier |
 | `npm run format:check` | Verify formatting without writing |
 
-Markdown files are excluded from Prettier: its reflow fights the hand-formatted tables in
-`REQUIREMENTS.md`.
+Markdown files are excluded from Prettier: its reflow fights the hand-formatted tables in the
+requirements document.
 
 ## Project structure
 
@@ -80,6 +81,6 @@ src/
 - The application interface is written in Brazilian Portuguese, because that is the end user's
   language. Route paths are in Portuguese for the same reason: the address bar is part of the
   interface.
-- The interface follows the visual restraint constraints in `REQUIREMENTS.md` section 9.4. In short:
-  no emojis, no decorative gradients, no glow, and color reserved for the clinical classification of
-  values and for the primary action.
+- The interface follows the visual restraint constraints in the requirements document, section 9.4.
+  In short: no emojis, no decorative gradients, no glow, and color reserved for the clinical
+  classification of values and for the primary action.
