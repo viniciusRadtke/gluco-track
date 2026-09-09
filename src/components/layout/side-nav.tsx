@@ -32,7 +32,7 @@ export function SideNav() {
       className="border-border-base bg-surface-raised fixed inset-y-0 left-0 hidden w-64 flex-col border-r px-3 py-5 lg:flex"
     >
       <div className="px-3 pb-6">
-        <span className="text-text text-base font-semibold">Registro de Glicemia</span>
+        <span className="text-text text-base font-semibold">GlucoTrack</span>
       </div>
 
       <div className="flex flex-col gap-1">

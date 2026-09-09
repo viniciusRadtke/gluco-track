@@ -7,7 +7,7 @@ import { ThemeToggle } from '@/components/theme-toggle'
 
 function usePageTitle() {
   const { pathname } = useLocation()
-  return allNavItems.find((item) => item.to === pathname)?.label ?? 'Registro de Glicemia'
+  return allNavItems.find((item) => item.to === pathname)?.label ?? 'GlucoTrack'
 }
 
 export function AppShell() {
