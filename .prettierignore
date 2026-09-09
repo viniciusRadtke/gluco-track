@@ -1,0 +1,6 @@
+dist
+node_modules
+package-lock.json
+
+# Markdown is authored by hand; Prettier's reflow fights the table formatting.
+*.md
