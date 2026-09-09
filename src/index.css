@@ -1,0 +1,124 @@
+@import 'tailwindcss';
+
+/*
+ * Dark mode is driven by a class on <html> rather than by the media query alone,
+ * so the in-app theme toggle (RF-CFG-04) can override the system preference.
+ * The class is applied before first paint by the inline script in index.html.
+ */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Palette. Deliberately neutral and restricted, per REQUIREMENTS.md section 9.4:
+ * grays carry the interface, and color is reserved for the clinical
+ * classification of values and for the primary action. Every pairing below meets
+ * WCAG AA contrast against its intended background (RNF-USA-02).
+ */
+:root {
+  color-scheme: light;
+
+  --surface: #f7f7f6;
+  --surface-raised: #ffffff;
+  --surface-sunken: #eeeeec;
+
+  --border: #e2e2df;
+  --border-strong: #c9c9c3;
+
+  --text: #1a1a19;
+  --text-muted: #5c5c57;
+  --text-subtle: #7d7d76;
+
+  --accent: #1f5f8b;
+  --accent-hover: #17486a;
+  --accent-foreground: #ffffff;
+  --accent-subtle: #e7eff5;
+
+  --clinical-alert: #b3261e;
+  --clinical-alert-surface: #fbeae8;
+  --clinical-caution: #8a5a00;
+  --clinical-caution-surface: #fbf2df;
+  --clinical-in-range: #1c6b45;
+  --clinical-in-range-surface: #e5f1ea;
+}
+
+.dark {
+  color-scheme: dark;
+
+  --surface: #131313;
+  --surface-raised: #1c1c1b;
+  --surface-sunken: #0d0d0d;
+
+  --border: #2e2e2c;
+  --border-strong: #454542;
+
+  --text: #ededea;
+  --text-muted: #a5a59f;
+  --text-subtle: #7e7e78;
+
+  --accent: #6aa9d4;
+  --accent-hover: #8cbfe2;
+  --accent-foreground: #0c1a24;
+  --accent-subtle: #16242e;
+
+  --clinical-alert: #f0938a;
+  --clinical-alert-surface: #2c1a18;
+  --clinical-caution: #dcb066;
+  --clinical-caution-surface: #292317;
+  --clinical-in-range: #74c493;
+  --clinical-in-range-surface: #16271e;
+}
+
+@theme inline {
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-sunken: var(--surface-sunken);
+
+  --color-border-base: var(--border);
+  --color-border-strong: var(--border-strong);
+
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-text-subtle: var(--text-subtle);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-subtle: var(--accent-subtle);
+
+  --color-clinical-alert: var(--clinical-alert);
+  --color-clinical-alert-surface: var(--clinical-alert-surface);
+  --color-clinical-caution: var(--clinical-caution);
+  --color-clinical-caution-surface: var(--clinical-caution-surface);
+  --color-clinical-in-range: var(--clinical-in-range);
+  --color-clinical-in-range-surface: var(--clinical-in-range-surface);
+
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+@layer base {
+  /*
+   * 17px base instead of the usual 16px, per RNF-USA-01: the end user prefers
+   * slightly larger type.
+   */
+  html {
+    font-size: 17px;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-surface text-text font-sans antialiased;
+  }
+
+  /*
+   * A single visible focus treatment across the app. Keyboard users must always
+   * be able to see where they are.
+   */
+  :focus-visible {
+    @apply outline-accent outline-2 outline-offset-2;
+  }
+
+  /* Tabular figures keep clinical values from shifting width as they change. */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
