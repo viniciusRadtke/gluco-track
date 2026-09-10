@@ -43,3 +43,56 @@ export function fromDateTimeInputs(dateValue: string, timeValue: string): Date |
 
   return Number.isNaN(parsed.getTime()) ? null : parsed
 }
+
+/**
+ * Records are read against São Paulo time rather than the browser's own zone
+ * (RNF-LOC-04), so a reading keeps the date and hour it was taken at even when
+ * the caregiver opens the history from somewhere else.
+ */
+const TIME_ZONE = 'America/Sao_Paulo'
+
+const dateFormatter = new Intl.DateTimeFormat('pt-BR', {
+  timeZone: TIME_ZONE,
+  day: '2-digit',
+  month: '2-digit',
+  year: 'numeric',
+})
+
+const timeFormatter = new Intl.DateTimeFormat('pt-BR', {
+  timeZone: TIME_ZONE,
+  hour: '2-digit',
+  minute: '2-digit',
+  hourCycle: 'h23',
+})
+
+const weekdayFormatter = new Intl.DateTimeFormat('pt-BR', {
+  timeZone: TIME_ZONE,
+  weekday: 'long',
+})
+
+/** `09/09/2026` (RNF-LOC-03). */
+export function formatDate(date: Date): string {
+  return dateFormatter.format(date)
+}
+
+/** `08:15`, 24-hour (RNF-LOC-03). */
+export function formatTime(date: Date): string {
+  return timeFormatter.format(date)
+}
+
+/** `terça-feira` — context for a date heading, never the heading itself. */
+export function formatWeekday(date: Date): string {
+  return weekdayFormatter.format(date)
+}
+
+/**
+ * Midnight, local time, `days` days back. Used as the lower bound of a history
+ * period: the day is the local one, so a period that starts today includes a
+ * reading taken at 06:00 this morning (§8.2).
+ */
+export function startOfDaysAgo(days: number): Date {
+  const start = new Date()
+  start.setHours(0, 0, 0, 0)
+  start.setDate(start.getDate() - days + 1)
+  return start
+}

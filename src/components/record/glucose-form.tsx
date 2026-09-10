@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
 
 import { Button } from '@/components/ui/button'
+import { CLINICAL_TONE_CLASSES } from '@/components/ui/clinical-tone'
 import { Field, inputSurfaceClassName } from '@/components/ui/field'
 import { cn } from '@/lib/cn'
 import {
@@ -11,7 +12,6 @@ import {
   GLUCOSE_CONTEXTS,
   GLUCOSE_IMPLAUSIBLE,
   INPUT_RANGES,
-  type ClinicalTone,
   type Thresholds,
 } from '@/lib/clinical'
 import { fromDateTimeInputs, toDateInputValue, toTimeInputValue } from '@/lib/datetime'
@@ -20,12 +20,6 @@ import { countGlucoseReadingsOnDay, createGlucoseReading } from '@/lib/records'
 import { FormStatus, type StatusTone } from './form-status'
 import { MeasuredAtFields } from './measured-at-fields'
 import { NoteField } from './note-field'
-
-const TONE_CLASSES: Record<ClinicalTone, string> = {
-  alert: 'bg-clinical-alert-surface text-clinical-alert',
-  caution: 'bg-clinical-caution-surface text-clinical-caution',
-  'in-range': 'bg-clinical-in-range-surface text-clinical-in-range',
-}
 
 const { min: MIN, max: MAX } = INPUT_RANGES.glucose
 
@@ -198,7 +192,7 @@ export function GlucoseForm({
           <div
             className={cn(
               'flex flex-wrap items-baseline justify-between gap-2 rounded-lg px-3 py-2.5',
-              TONE_CLASSES[GLUCOSE_CLASSIFICATION_TONE[classification]],
+              CLINICAL_TONE_CLASSES[GLUCOSE_CLASSIFICATION_TONE[classification]],
             )}
           >
             <span className="text-[0.95rem] font-semibold">
