@@ -1,10 +1,12 @@
 import { useState, type FormEvent } from 'react'
 
 import { Button } from '@/components/ui/button'
+import { CLINICAL_TONE_CLASSES } from '@/components/ui/clinical-tone'
 import { Field, inputClassName } from '@/components/ui/field'
 import { cn } from '@/lib/cn'
 import {
   BLOOD_PRESSURE_CLASSIFICATION_LABEL,
+  BLOOD_PRESSURE_CLASSIFICATION_TONE,
   classifyBloodPressure,
   INPUT_RANGES,
   type Thresholds,
@@ -205,9 +207,7 @@ export function BloodPressureForm({
           <div
             className={cn(
               'flex flex-wrap items-baseline justify-between gap-2 rounded-lg px-3 py-2.5',
-              classification === 'above-target'
-                ? 'bg-clinical-caution-surface text-clinical-caution'
-                : 'bg-clinical-in-range-surface text-clinical-in-range',
+              CLINICAL_TONE_CLASSES[BLOOD_PRESSURE_CLASSIFICATION_TONE[classification]],
             )}
           >
             <span className="text-[0.95rem] font-semibold">

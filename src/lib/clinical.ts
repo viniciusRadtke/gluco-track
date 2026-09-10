@@ -108,3 +108,14 @@ export const BLOOD_PRESSURE_CLASSIFICATION_LABEL: Record<BloodPressureClassifica
   'in-range': 'Na faixa',
   'above-target': 'Acima do alvo',
 }
+
+/**
+ * Blood pressure has no caution band of its own: a reading is either inside the
+ * configured target or above it (RF-BIO-06). The map exists so the recording
+ * form and the history classify from one source, as glucose already does.
+ */
+export const BLOOD_PRESSURE_CLASSIFICATION_TONE: Record<BloodPressureClassification, ClinicalTone> =
+  {
+    'in-range': 'in-range',
+    'above-target': 'caution',
+  }
