@@ -23,5 +23,9 @@ dist-ssr
 *.sln
 *.sw?
 
-# Project documentation kept locally, outside version control
+# Project documentation and agent instructions, kept locally and outside
+# version control
 docs
+CLAUDE.md
+skills
+.claude
