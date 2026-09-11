@@ -35,7 +35,10 @@ export function ThemeToggle() {
             title={label}
             onClick={() => setPreference(value)}
             className={cn(
-              'flex size-9 items-center justify-center rounded-md transition-colors',
+              // 44px, the minimum touch target the project holds itself to
+              // (RNF-USA-01). The control now also sits on Configurações, where
+              // it is reached by thumb rather than by cursor.
+              'flex size-11 items-center justify-center rounded-md transition-colors',
               selected
                 ? 'bg-surface-sunken text-text'
                 : 'text-text-subtle hover:text-text cursor-pointer',
