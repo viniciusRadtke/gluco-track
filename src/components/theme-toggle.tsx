@@ -36,8 +36,8 @@ export function ThemeToggle() {
             onClick={() => setPreference(value)}
             className={cn(
               // 44px, the minimum touch target the project holds itself to
-              // (RNF-USA-01). The control now also sits on Configurações, where
-              // it is reached by thumb rather than by cursor.
+              // (RNF-USA-01). The control sits on Configurações, reached by
+              // thumb rather than by cursor.
               'flex size-11 items-center justify-center rounded-md transition-colors',
               selected
                 ? 'bg-surface-sunken text-text'
