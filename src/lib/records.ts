@@ -1,5 +1,6 @@
 import type { PostgrestError } from '@supabase/supabase-js'
 
+import type { Thresholds } from './clinical'
 import type {
   BloodPressureReading,
   GlucoseContext,
@@ -27,6 +28,37 @@ export async function fetchPatientSettings(patientId: string): Promise<PatientSe
 
   if (error) {
     throw failed('carregar as faixas configuradas', error)
+  }
+  return data
+}
+
+/**
+ * Saves the thresholds the patient configured (RF-CFG-01 … RF-CFG-03).
+ *
+ * The row is created by a trigger when the patient is created, so this updates
+ * and never inserts. A caregiver reaching here is refused by the policy, which
+ * is the enforcement; the interface only mirrors it (RF-AUT-06).
+ */
+export async function updatePatientSettings(input: {
+  patientId: string
+  thresholds: Thresholds
+}): Promise<PatientSettings> {
+  const { data, error } = await supabase
+    .from('patient_settings')
+    .update({
+      glucose_target_min: input.thresholds.glucose_target_min,
+      glucose_target_max: input.thresholds.glucose_target_max,
+      alert_low: input.thresholds.alert_low,
+      alert_high: input.thresholds.alert_high,
+      bp_target_systolic: input.thresholds.bp_target_systolic,
+      bp_target_diastolic: input.thresholds.bp_target_diastolic,
+    })
+    .eq('patient_id', input.patientId)
+    .select()
+    .single()
+
+  if (error) {
+    throw failed('salvar as faixas configuradas', error)
   }
   return data
 }
