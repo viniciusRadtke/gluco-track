@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { DEFAULT_THRESHOLDS, type Thresholds } from '@/lib/clinical'
 import { fetchPatientSettings } from '@/lib/records'
@@ -6,44 +6,60 @@ import { fetchPatientSettings } from '@/lib/records'
 /**
  * The patient's configured thresholds, used to classify a value as it is typed.
  *
- * Classification is advisory, so a failed load is not something the patient can
- * act on: the hook falls back to the documented defaults (§5.1) and the screen
- * stays usable. Saving a measurement never depends on this.
+ * Two readings of the same load, because two screens need different things
+ * from it. `thresholds` always holds usable numbers: classification is
+ * advisory, so a failed load is not something the patient can act on and the
+ * recording forms carry on with the documented defaults (§5.1). `configured`
+ * holds the row itself and is null until it has actually been read, so the
+ * settings screen never offers the defaults for editing over values it failed
+ * to load — saving those would overwrite the patient's own configuration.
  */
 export function usePatientSettings(patientId: string | null): {
   thresholds: Thresholds
+  configured: Thresholds | null
   loading: boolean
+  error: string | null
+  reload: () => void
 } {
-  const [thresholds, setThresholds] = useState<Thresholds>(DEFAULT_THRESHOLDS)
+  const [configured, setConfigured] = useState<Thresholds | null>(null)
   const [loading, setLoading] = useState(patientId !== null)
+  const [error, setError] = useState<string | null>(null)
+  const [attempt, setAttempt] = useState(0)
+
+  const reload = useCallback(() => {
+    setAttempt((previous) => previous + 1)
+  }, [])
 
   useEffect(() => {
     if (!patientId) {
-      setThresholds(DEFAULT_THRESHOLDS)
+      setConfigured(null)
+      setError(null)
       setLoading(false)
       return
     }
 
     let active = true
     setLoading(true)
+    setError(null)
 
     fetchPatientSettings(patientId)
       .then((settings) => {
         if (!active) return
-        setThresholds(settings ?? DEFAULT_THRESHOLDS)
+        setConfigured(settings)
         setLoading(false)
       })
-      .catch((error: unknown) => {
+      .catch((cause: unknown) => {
         if (!active) return
-        console.error('Could not load patient settings; falling back to defaults.', error)
-        setThresholds(DEFAULT_THRESHOLDS)
+        console.error('Could not load patient settings; falling back to defaults.', cause)
+        setConfigured(null)
+        setError((cause as Error).message)
         setLoading(false)
       })
 
     return () => {
       active = false
     }
-  }, [patientId])
+  }, [patientId, attempt])
 
-  return { thresholds, loading }
+  return { thresholds: configured ?? DEFAULT_THRESHOLDS, configured, loading, error, reload }
 }
