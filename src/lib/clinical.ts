@@ -119,3 +119,110 @@ export const BLOOD_PRESSURE_CLASSIFICATION_TONE: Record<BloodPressureClassificat
     'in-range': 'in-range',
     'above-target': 'caution',
   }
+
+/**
+ * The six values the patient can configure (RF-CFG-01, RF-CFG-02, RF-CFG-03),
+ * in the order the settings screen shows them: the four glucose thresholds
+ * read as one ascending scale, and the two blood pressure targets follow.
+ */
+export type ThresholdField = keyof Thresholds
+
+export const THRESHOLD_FIELDS: ThresholdField[] = [
+  'alert_low',
+  'glucose_target_min',
+  'glucose_target_max',
+  'alert_high',
+  'bp_target_systolic',
+  'bp_target_diastolic',
+]
+
+export const THRESHOLD_LABEL: Record<ThresholdField, string> = {
+  alert_low: 'Limite de hipoglicemia',
+  glucose_target_min: 'Mínimo da faixa alvo',
+  glucose_target_max: 'Máximo da faixa alvo',
+  alert_high: 'Limite de hiperglicemia',
+  bp_target_systolic: 'Sistólica máxima',
+  bp_target_diastolic: 'Diastólica máxima',
+}
+
+/** A threshold is a measurement, so it accepts the same range one does (§5.1). */
+export const THRESHOLD_INPUT_RANGE: Record<ThresholdField, { min: number; max: number }> = {
+  alert_low: INPUT_RANGES.glucose,
+  glucose_target_min: INPUT_RANGES.glucose,
+  glucose_target_max: INPUT_RANGES.glucose,
+  alert_high: INPUT_RANGES.glucose,
+  bp_target_systolic: INPUT_RANGES.systolic,
+  bp_target_diastolic: INPUT_RANGES.diastolic,
+}
+
+/**
+ * Checks a set of thresholds before it is saved.
+ *
+ * The four glucose values must rise strictly, which is the rule the database
+ * holds as a check constraint. Catching it here explains what is wrong in the
+ * patient's own language instead of surfacing a constraint name.
+ *
+ * Blood pressure carries no ordering rule: the two targets are independent and
+ * a reading above either one is flagged (RF-BIO-06).
+ */
+export function validateThresholds(values: Thresholds): Partial<Record<ThresholdField, string>> {
+  const errors: Partial<Record<ThresholdField, string>> = {}
+
+  for (const field of THRESHOLD_FIELDS) {
+    const value = values[field]
+    const range = THRESHOLD_INPUT_RANGE[field]
+    if (!Number.isInteger(value)) {
+      errors[field] = 'Informe um número inteiro.'
+    } else if (value < range.min || value > range.max) {
+      errors[field] = `Valor fora da faixa aceita (${range.min} a ${range.max}).`
+    }
+  }
+
+  // Each message lands on the later value of the pair, because that is the one
+  // the patient has to raise for the scale to make sense.
+  if (!errors.alert_low && !errors.glucose_target_min) {
+    if (values.glucose_target_min <= values.alert_low) {
+      errors.glucose_target_min = 'Deve ser maior que o limite de hipoglicemia.'
+    }
+  }
+  if (!errors.glucose_target_min && !errors.glucose_target_max) {
+    if (values.glucose_target_max <= values.glucose_target_min) {
+      errors.glucose_target_max = 'Deve ser maior que o mínimo da faixa alvo.'
+    }
+  }
+  if (!errors.glucose_target_max && !errors.alert_high) {
+    if (values.alert_high <= values.glucose_target_max) {
+      errors.alert_high = 'Deve ser maior que o máximo da faixa alvo.'
+    }
+  }
+
+  return errors
+}
+
+export type GlucoseBand = { classification: GlucoseClassification; range: string }
+
+/**
+ * The five bands a set of thresholds produces (§9.2), written out.
+ *
+ * The settings screen shows them so the patient sees what a change does before
+ * saving it. The boundaries are the ones `classifyGlucose` applies, stated in
+ * whole numbers because the column is an integer.
+ */
+export function describeGlucoseBands(thresholds: Thresholds): GlucoseBand[] {
+  return [
+    { classification: 'low', range: `Abaixo de ${thresholds.alert_low}` },
+    {
+      classification: 'below-target',
+      range: `${thresholds.alert_low} a ${thresholds.glucose_target_min - 1}`,
+    },
+    {
+      classification: 'in-range',
+      range: `${thresholds.glucose_target_min} a ${thresholds.glucose_target_max}`,
+    },
+    {
+      classification: 'above-target',
+      range: `${thresholds.glucose_target_max + 1} a ${thresholds.alert_high}`,
+    },
+    { classification: 'high', range: `Acima de ${thresholds.alert_high}` },
+  ]
+}
